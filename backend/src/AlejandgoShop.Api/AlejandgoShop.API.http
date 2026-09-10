@@ -1,0 +1,6 @@
+@AlejandgoShop.API_HostAddress = http://localhost:5198
+
+GET {{AlejandgoShop.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

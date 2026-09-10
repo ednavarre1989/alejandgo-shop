@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AlejandgoShop.Application/AlejandgoShop.Application.csproj" />
+    <Project Path="src/AlejandgoShop.Domain/AlejandgoShop.Domain.csproj" />
+    <Project Path="src/AlejandgoShop.Infrastructure/AlejandgoShop.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/AlejandgoShop.Api/">
+    <Project Path="src/AlejandgoShop.Api/AlejandgoShop.API.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AlejandgoShop.IntegrationTests/AlejandgoShop.IntegrationTests.csproj" />
+    <Project Path="tests/AlejandgoShop.UnitTests/AlejandgoShop.UnitTests.csproj" />
+  </Folder>
+</Solution>
