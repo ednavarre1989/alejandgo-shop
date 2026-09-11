@@ -1,0 +1,38 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: alejandgoshop-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "AlejandgoShop!2026"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - alejandgoshop-db-data:/var/opt/mssql
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: alejandgoshop-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=AlejandgoShop;User Id=sa;Password=AlejandgoShop!2026;TrustServerCertificate=True"
+    ports:
+      - "5080:8080"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: alejandgoshop-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+volumes:
+  alejandgoshop-db-data:
