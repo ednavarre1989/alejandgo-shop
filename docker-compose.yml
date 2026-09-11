@@ -7,7 +7,7 @@ services:
       MSSQL_SA_PASSWORD: "AlejandgoShop!2026"
       MSSQL_PID: "Express"
     ports:
-      - "1433:1433"
+      - "1434:1433"
     volumes:
       - alejandgoshop-db-data:/var/opt/mssql
 
@@ -18,7 +18,7 @@ services:
     container_name: alejandgoshop-api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=AlejandgoShop;User Id=sa;Password=AlejandgoShop!2026;TrustServerCertificate=True"
+      ConnectionStrings__DefaultConnection: "Server=db,1434;Database=AlejandgoShop;User Id=sa;Password=AlejandgoShop!2026;TrustServerCertificate=True"
     ports:
       - "5080:8080"
     depends_on:
