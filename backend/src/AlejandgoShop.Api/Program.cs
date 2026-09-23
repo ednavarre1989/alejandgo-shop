@@ -1,3 +1,4 @@
+using AlejandgoShop.Domain.Catalog;
 using AlejandgoShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,6 +43,46 @@ app.MapGet("/api/catalog-designs", async (AppDbContext db) =>
     return Results.Ok(designs);
 })
 .WithName("GetCatalogDesigns");
+
+app.MapGet("/api/products/{productId:guid}/variants/{variantId:guid}/availability",
+    async (Guid productId, Guid variantId, Guid? catalogDesignId, AppDbContext db) =>
+    {
+        var product = await db.Products
+            .Include(p => p.Variants)
+            .FirstOrDefaultAsync(p => p.Id == productId);
+
+        if (product is null)
+        {
+            return Results.NotFound();
+        }
+
+        var variant = product.Variants.FirstOrDefault(v => v.Id == variantId);
+        if (variant is null)
+        {
+            return Results.NotFound();
+        }
+
+        CatalogDesign? catalogDesign = null;
+        if (catalogDesignId is not null)
+        {
+            catalogDesign = await db.CatalogDesigns.FindAsync(catalogDesignId.Value);
+            if (catalogDesign is null)
+            {
+                return Results.NotFound();
+            }
+        }
+
+        var availableQuantity = StockAvailabilityPolicy.GetAvailableQuantity(variant, catalogDesign);
+
+        return Results.Ok(new
+        {
+            ProductId = productId,
+            VariantId = variantId,
+            CatalogDesignId = catalogDesignId,
+            AvailableQuantity = availableQuantity
+        });
+    })
+.WithName("GetProductVariantAvailability");
 
 app.Run();
 
