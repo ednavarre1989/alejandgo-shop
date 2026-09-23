@@ -39,6 +39,20 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
+app.MapGet("/api/product-variants", async (AppDbContext db) =>
+{
+    var variants = await db.ProductVariants.ToListAsync();
+    return Results.Ok(variants);
+})
+.WithName("GetProductVariants");
+
+app.MapGet("/api/catalog-designs", async (AppDbContext db) =>
+{
+    var designs = await db.CatalogDesigns.ToListAsync();
+    return Results.Ok(designs);
+})
+.WithName("GetCatalogDesigns");
+
 app.Run();
 
 internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
