@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
 
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<CatalogDesign> CatalogDesigns => Set<CatalogDesign>();
+    public DbSet<Product> Products => Set<Product>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
