@@ -10,12 +10,7 @@ public class ProductTests
     [Fact]
     public void Un_producto_nuevo_no_tiene_variantes()
     {
-        var product = new Product(
-            name: "Camiseta Básica",
-            description: "Camiseta 100% algodón",
-            basePrice: 19.99m,
-            category: ProductCategory.Camiseta,
-            allowsCustomization: true);
+        var product = CreateProduct();
 
         product.Variants.ShouldBeEmpty();
     }
@@ -52,6 +47,34 @@ public class ProductTests
             allowsCustomization: false);
 
         product.AllowsCustomization.ShouldBeFalse();
+        product.CustomDesignDimensions.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Un_producto_que_permite_personalizacion_debe_tener_dimensiones()
+    {
+        Should.Throw<ArgumentException>(() =>
+            new Product(
+                name: "Tapete sin dimensiones",
+                description: "desc",
+                basePrice: 25m,
+                category: ProductCategory.Otro,
+                allowsCustomization: true,
+                customDesignDimensions: null));
+    }
+
+    [Fact]
+    public void Un_producto_personalizable_guarda_sus_dimensiones()
+    {
+        var product = new Product(
+            name: "Tapete TCG",
+            description: "Tapete para cartas",
+            basePrice: 25m,
+            category: ProductCategory.Otro,
+            allowsCustomization: true,
+            customDesignDimensions: PrintDimensions.TcgPlaymat);
+
+        product.CustomDesignDimensions.ShouldBe(PrintDimensions.TcgPlaymat);
     }
 
     private static Product CreateProduct() =>
@@ -59,5 +82,6 @@ public class ProductTests
             description: "Camiseta 100% algodón",
             basePrice: 19.99m,
             category: ProductCategory.Camiseta,
-            allowsCustomization: true);
+            allowsCustomization: true,
+            customDesignDimensions: PrintDimensions.TcgPlaymat); // valor de prueba, no representa la realidad de negocio
 }

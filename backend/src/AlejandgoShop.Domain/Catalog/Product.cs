@@ -12,16 +12,31 @@ public class Product : Entity
     public decimal BasePrice { get; private set; }
     public ProductCategory Category { get; private set; }
     public bool AllowsCustomization { get; private set; }
+    public PrintDimensions? CustomDesignDimensions { get; private set; }
 
     public IReadOnlyList<ProductVariant> Variants => _variants.AsReadOnly();
 
-    public Product(string name, string description, decimal basePrice, ProductCategory category, bool allowsCustomization)
+    public Product(
+        string name,
+        string description,
+        decimal basePrice,
+        ProductCategory category,
+        bool allowsCustomization,
+        PrintDimensions? customDesignDimensions = null)
     {
+        if (allowsCustomization && customDesignDimensions is null)
+        {
+            throw new ArgumentException(
+                "Un producto que permite personalización debe especificar sus dimensiones de impresión.",
+                nameof(customDesignDimensions));
+        }
+
         Name = name;
         Description = description;
         BasePrice = basePrice;
         Category = category;
         AllowsCustomization = allowsCustomization;
+        CustomDesignDimensions = customDesignDimensions;
     }
 
     private Product() { }
