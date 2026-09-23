@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-    backend:
+  backend:
     name: Backend - build & test
     runs-on: ubuntu-latest
     services:
@@ -42,25 +42,6 @@ jobs:
       - name: Test
         env:
           ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=AlejandgoShop;User Id=sa;Password=AlejandgoShop!2026;TrustServerCertificate=True"
-        run: dotnet test backend/AlejandgoShop.slnx --no-build --configuration Release
-    name: Backend - build & test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Restore
-        run: dotnet restore backend/AlejandgoShop.slnx
-
-      - name: Build
-        run: dotnet build backend/AlejandgoShop.slnx --no-restore --configuration Release
-
-      - name: Test
         run: dotnet test backend/AlejandgoShop.slnx --no-build --configuration Release
 
   frontend:
