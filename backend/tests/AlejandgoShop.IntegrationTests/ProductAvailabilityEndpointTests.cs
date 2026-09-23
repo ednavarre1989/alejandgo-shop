@@ -25,7 +25,7 @@ public class ProductAvailabilityEndpointTests : IClassFixture<WebApplicationFact
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var product = new Product("Camiseta Test", "desc", 19.99m, ProductCategory.Camiseta, allowsCustomization: true);
+        var product = new Product("Camiseta Test", "desc", 19.99m, ProductCategory.Camiseta, allowsCustomization: false);
         product.AddVariant("Negro", Size.M, stock: 25, sku: $"TEST-{Guid.NewGuid()}");
         db.Products.Add(product);
         await db.SaveChangesAsync();
@@ -49,7 +49,7 @@ public class ProductAvailabilityEndpointTests : IClassFixture<WebApplicationFact
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var product = new Product("Sudadera Test", "desc", 39.99m, ProductCategory.Sudadera, allowsCustomization: true);
+        var product = new Product("Sudadera Test", "desc", 39.99m, ProductCategory.Sudadera, allowsCustomization: false);
         product.AddVariant("Blanco", Size.L, stock: 100, sku: $"TEST-{Guid.NewGuid()}");
         db.Products.Add(product);
 

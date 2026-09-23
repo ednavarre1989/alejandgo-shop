@@ -36,5 +36,9 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .WithOne()
             .HasForeignKey("ProductId")
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(p => p.CustomDesignDimensions)
+            .HasConversion<string>()
+            .HasMaxLength(30);
     }
 }
