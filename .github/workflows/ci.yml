@@ -1,11 +1,11 @@
 name: CI
-
+ 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
+ 
 jobs:
   backend:
     name: Backend - build & test
@@ -23,45 +23,53 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
-
+ 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+ 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
+ 
       - name: Restore
         run: dotnet restore backend/AlejandgoShop.slnx
-
+ 
       - name: Build
         run: dotnet build backend/AlejandgoShop.slnx --no-restore --configuration Release
-
+ 
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+ 
+      - name: Apply migrations
+        env:
+          ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=AlejandgoShop;User Id=sa;Password=AlejandgoShop!2026;TrustServerCertificate=True"
+        run: dotnet ef database update --project backend/src/AlejandgoShop.Infrastructure --startup-project backend/src/AlejandgoShop.Api
+ 
       - name: Test
         env:
           ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=AlejandgoShop;User Id=sa;Password=AlejandgoShop!2026;TrustServerCertificate=True"
         run: dotnet test backend/AlejandgoShop.slnx --no-build --configuration Release
-
+ 
   frontend:
     name: Frontend - build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+ 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-
+ 
       - name: Install dependencies
         working-directory: frontend
         run: npm ci
-
+ 
       - name: Build
         working-directory: frontend
         run: npm run build
