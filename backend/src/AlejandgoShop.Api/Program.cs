@@ -1,6 +1,7 @@
 using AlejandgoShop.Domain.Catalog;
 using AlejandgoShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using SkiaSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +84,38 @@ app.MapGet("/api/products/{productId:guid}/variants/{variantId:guid}/availabilit
         });
     })
 .WithName("GetProductVariantAvailability");
+
+app.MapPost("/api/products/{productId:guid}/custom-designs/validate",
+    async (Guid productId, IFormFile file, AppDbContext db) =>
+    {
+        var product = await db.Products.FindAsync(productId);
+
+        if (product is null)
+        {
+            return Results.NotFound();
+        }
+
+        if (!product.AllowsCustomization || product.CustomDesignDimensions is null)
+        {
+            return Results.BadRequest(new { error = "Este producto no admite diseños personalizados." });
+        }
+
+        await using var stream = file.OpenReadStream();
+        using var codec = SKCodec.Create(stream);
+        var width = codec.Info.Width;
+        var height = codec.Info.Height;
+
+        var isValid = ImageResolutionPolicy.IsValidResolution(width, height, product.CustomDesignDimensions.Value);
+
+        return Results.Ok(new
+        {
+            IsValid = isValid,
+            ImageWidthPx = width,
+            ImageHeightPx = height
+        });
+    })
+.WithName("ValidateCustomDesign")
+.DisableAntiforgery();
 
 app.Run();
 
