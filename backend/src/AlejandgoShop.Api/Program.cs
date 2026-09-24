@@ -1,4 +1,5 @@
 using AlejandgoShop.Domain.Catalog;
+using AlejandgoShop.Domain.Enums;
 using AlejandgoShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using SkiaSharp;
@@ -117,9 +118,55 @@ app.MapPost("/api/products/{productId:guid}/custom-designs/validate",
 .WithName("ValidateCustomDesign")
 .DisableAntiforgery();
 
+app.MapPost("/api/products", async (CreateProductRequest request, AppDbContext db) =>
+{
+    ProductCategory category;
+    if (!Enum.TryParse(request.Category, out category))
+    {
+        return Results.BadRequest(new { error = $"Categoría '{request.Category}' no reconocida." });
+    }
+
+    PrintDimensions? dimensions = null;
+    if (request.CustomDesignDimensions is not null)
+    {
+        if (!Enum.TryParse<PrintDimensions>(request.CustomDesignDimensions, out var parsedDimensions))
+        {
+            return Results.BadRequest(new { error = $"Dimensiones '{request.CustomDesignDimensions}' no reconocidas." });
+        }
+        dimensions = parsedDimensions;
+    }
+
+    Product product;
+    try
+    {
+        product = new Product(
+            request.Name,
+            request.Description,
+            request.BasePrice,
+            category,
+            request.AllowsCustomization,
+            dimensions);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
+
+    db.Products.Add(product);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/api/products/{product.Id}", new { product.Id, product.Name });
+})
+.WithName("CreateProduct");
+
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public partial class Program { }
+
+record CreateProductRequest(
+    string Name,
+    string Description,
+    decimal BasePrice,
+    string Category,
+    bool AllowsCustomization,
+    string? CustomDesignDimensions);
